@@ -2,9 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["interactiveTransactions"]
-
 }
 
 datasource db {
@@ -92,7 +91,7 @@ model AppAccessModul {
   appGroupUser AppGroupUser @relation(fields: [app_group_user_id], references: [id], onDelete: Cascade)
   appModul     AppModul     @relation(fields: [app_modul_id], references: [id], onDelete: Cascade)
 
-  @@map("app_acess_modul")
+  @@map("app_access_modul")
 }
 
 model AppModul {
@@ -134,7 +133,7 @@ model MasterCategory {
   masterCategoryParent   MasterCategory?  @relation(name: "category", fields: [master_category_id], references: [id], onDelete: Cascade)
   masterCategoryChildren MasterCategory[] @relation(name: "category")
   masterDatas            MasterData[]
-		
+
   @@map("master_category")
 }
 
