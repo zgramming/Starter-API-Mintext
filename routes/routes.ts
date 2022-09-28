@@ -1,10 +1,14 @@
-import UserRouter from "./setting/user";
-import UserGroupRouter from "./setting/user_group";
-import combineRouters from "koa-combine-routers";
-import ModulRouter from "./setting/modul";
-import MenuRouter from "./setting/menu";
-import AccessModulRouter from "./setting/access_modul";
-import AccessMenuRouter from "./setting/access_menu";
+import combineRouters from 'koa-combine-routers';
+
+import AccessMenuRouter from './setting/access_menu';
+import AccessModulRouter from './setting/access_modul';
+import MasterCategoryRouter from './setting/master_category';
+import MasterDataRouter from './setting/master_data';
+import MenuRouter from './setting/menu';
+import ModulRouter from './setting/modul';
+import ParameterRouter from './setting/parameter';
+import UserRouter from './setting/user';
+import UserGroupRouter from './setting/user_group';
 
 const router = combineRouters([
   UserRouter,
@@ -13,6 +17,9 @@ const router = combineRouters([
   MenuRouter,
   AccessModulRouter,
   AccessMenuRouter,
+  MasterCategoryRouter,
+  MasterDataRouter,
+  ParameterRouter,
 ]);
 
 export default router;
