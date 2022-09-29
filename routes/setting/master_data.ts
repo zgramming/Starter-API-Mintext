@@ -1,6 +1,6 @@
 import Router from "koa-router";
 import validator from "validator";
-import { PrismaClient, StatusActive } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const MasterDataRouter = new Router({
@@ -19,7 +19,7 @@ MasterDataRouter.get("/", async (ctx, next) => {
     master_category_id?: number;
     code?: string;
     name?: string;
-    status?: StatusActive;
+    status?: string;
     limit?: number;
     offset?: number;
   } = ctx.query;
@@ -61,7 +61,7 @@ MasterDataRouter.post("/", async (ctx, next) => {
       code?: string;
       name?: string;
       description?: string;
-      status?: StatusActive;
+      status?: string;
       parameter1_key?: string;
       parameter1_value?: string;
       parameter2_key?: string;
@@ -132,7 +132,7 @@ MasterDataRouter.put("/:id", async (ctx, next) => {
       code?: string;
       name?: string;
       description?: string;
-      status?: StatusActive;
+      status?: string;
       parameter1_key?: string;
       parameter1_value?: string;
       parameter2_key?: string;

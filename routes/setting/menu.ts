@@ -1,7 +1,7 @@
 import Router from "koa-router";
 import validator from "validator";
 
-import { PrismaClient, StatusActive } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const MenuRouter = new Router({ prefix: "/api/setting/menu" });
@@ -10,13 +10,15 @@ MenuRouter.get("/", async (ctx, next) => {
   const {
     app_modul_id = 0,
     name = "",
-    route = "",
+    code = "",
+    status = "",
     limit = 10,
     offset = 0,
   }: {
     app_modul_id?: number;
     name?: string;
-    route?: string;
+    code?: string;
+    status?: string;
     limit?: number;
     offset?: number;
   } = ctx.query;
@@ -24,11 +26,16 @@ MenuRouter.get("/", async (ctx, next) => {
   const result = await prisma.appMenu.findMany({
     where: {
       ...(app_modul_id && { app_modul_id: +app_modul_id }),
-      ...(name && { name: name }),
-      ...(route && { route: route }),
+      ...(name && { name: { contains: name } }),
+      ...(code && { code: { contains: code } }),
+      ...(status && { status: { contains: status } }),
     },
-    ...(limit !== 0 && { take: +limit }),
-    ...(offset !== 0 && { skip: +offset }),
+    ...(limit != 0 && { take: +limit }),
+    ...(offset != 0 && { skip: +offset }),
+    include: {
+      menuParent: true,
+      appModul: true,
+    },
   });
   return (ctx.body = { success: true, data: result });
 });
@@ -37,7 +44,7 @@ MenuRouter.post("/", async (ctx, next) => {
   try {
     const {
       app_modul_id = 0,
-      app_menu_id_parent,
+      app_menu_id_parent = 0,
       code = "",
       name = "",
       route = "",
@@ -52,7 +59,7 @@ MenuRouter.post("/", async (ctx, next) => {
       route?: string;
       order?: number;
       icon?: string;
-      status?: StatusActive;
+      status?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
     if (app_modul_id == 0) ctx.throw("Modul required", 400);
@@ -92,7 +99,7 @@ MenuRouter.put("/:id", async (ctx, next) => {
     const { id = 0 }: { id?: number } = ctx.params;
     const {
       app_modul_id = 0,
-      app_menu_id_parent,
+      app_menu_id_parent = 0,
       code = "",
       name = "",
       route = "",
@@ -107,7 +114,7 @@ MenuRouter.put("/:id", async (ctx, next) => {
       route?: string;
       order?: number;
       icon?: string;
-      status?: StatusActive;
+      status?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
     if (id == 0) ctx.throw("ID required", 400);
@@ -120,7 +127,9 @@ MenuRouter.put("/:id", async (ctx, next) => {
       where: { id: +id },
       data: {
         app_modul_id: +app_modul_id,
-        app_menu_id_parent: app_menu_id_parent && +app_menu_id_parent,
+        ...(app_menu_id_parent  && {
+          app_menu_id_parent: app_menu_id_parent,
+        }),
         code: code,
         name: name,
         route: route,

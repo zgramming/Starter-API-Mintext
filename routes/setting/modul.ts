@@ -1,6 +1,6 @@
 import Router from "koa-router";
 import validator from "validator";
-import { PrismaClient, StatusActive } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const ModulRouter = new Router({ prefix: "/api/setting/modul" });
@@ -10,27 +10,31 @@ ModulRouter.get("/", async (ctx, next) => {
     code = "",
     name = "",
     pattern = "",
-    status = "active",
+    status,
     limit = 10,
     offset = 0,
   }: {
     code?: string;
     name?: string;
     pattern?: string;
-    status?: StatusActive;
+    status?: string;
     limit?: number;
     offset?: number;
   } = ctx.query;
 
   const result = await prisma.appModul.findMany({
     where: {
-      ...(code && { code: code }),
-      ...(name && { name: name }),
+      ...(code && { code: { contains: code } }),
+      ...(name && { name: { contains: name } }),
       ...(pattern && { pattern: pattern }),
       ...(status && { status: status }),
     },
-    ...(limit !== 0 && { take: +limit }),
-    ...(offset !== 0 && { skip: +offset }),
+    include: {
+      menus: true,
+      
+    },
+    // ...(limit !== 0 && { take: +limit }),
+    // ...(offset !== 0 && { skip: +offset }),
   });
 
   return (ctx.body = { success: true, data: result });
@@ -51,7 +55,7 @@ ModulRouter.post("/", async (ctx, next) => {
       pattern?: string;
       icon?: string;
       order?: number;
-      status?: StatusActive;
+      status?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
     if (validator.isEmpty(code)) ctx.throw("Code required", 400);
@@ -61,11 +65,12 @@ ModulRouter.post("/", async (ctx, next) => {
 
     const result = await prisma.appModul.create({
       data: {
-        code: code,
-        name: name,
-        pattern: pattern,
-        icon: icon,
-        order: order,
+        code,
+        name,
+        pattern,
+        icon,
+        order: +order,
+        status,
       },
     });
 
@@ -99,7 +104,7 @@ ModulRouter.put("/:id", async (ctx, next) => {
       pattern?: string;
       icon?: string;
       order?: number;
-      status?: StatusActive;
+      status?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
     if (id == 0) ctx.throw("ID Required", 400);
@@ -111,11 +116,12 @@ ModulRouter.put("/:id", async (ctx, next) => {
     const result = await prisma.appModul.update({
       where: { id: +id },
       data: {
-        code: code,
-        name: name,
-        pattern: pattern,
-        icon: icon,
-        order: order,
+        code,
+        name,
+        pattern,
+        icon,
+        order: +order,
+        status,
       },
     });
 

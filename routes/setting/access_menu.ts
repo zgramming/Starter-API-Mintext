@@ -1,7 +1,7 @@
 import Router from "koa-router";
 import validator from "validator";
 
-import { PrismaClient, StatusActive } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const AccessMenuRouter = new Router({ prefix: "/api/setting/access_menu" });
@@ -10,12 +10,18 @@ AccessMenuRouter.get("/", async (ctx, next) => {
   const {
     app_group_user_id = 0,
     app_modul_id = 0,
-  }: { app_group_user_id?: number; app_modul_id?: number } = ctx.query;
+    app_menu_id = 0,
+  }: {
+    app_group_user_id?: number;
+    app_modul_id?: number;
+    app_menu_id?: number;
+  } = ctx.query;
 
   const result = await prisma.appAccessMenu.findMany({
     where: {
-      ...(app_group_user_id && { app_group_user_id: app_group_user_id }),
-      ...(app_modul_id && { app_modul_id: app_modul_id }),
+      ...(app_group_user_id != 0 && { app_group_user_id: +app_group_user_id }),
+      ...(app_modul_id != 0 && { app_modul_id: +app_modul_id }),
+      ...(app_menu_id != 0 && { app_menu_id: +app_menu_id }),
     },
   });
   return (ctx.body = { success: true, data: result });
@@ -24,17 +30,17 @@ AccessMenuRouter.get("/", async (ctx, next) => {
 AccessMenuRouter.post("/", async (ctx, next) => {
   try {
     const {
-        app_group_user_id = 0,
-        data = [],
-      }: {
+      app_group_user_id = 0,
+      access_menu = [],
+    }: {
+      app_group_user_id?: number;
+      access_menu: Array<{
         app_group_user_id?: number;
-        data: Array<{
-          app_modul_id?: number;
-          app_menu_id?: number;
-          allowed_access?: string[];
-        }>;
-      } = JSON.parse(JSON.stringify(ctx.request.body));
-    if (app_group_user_id == 0) ctx.throw("Group User required", 400);
+        app_menu_id?: number;
+        app_modul_id?: number;
+        allowed_access: string[];
+      }>;
+    } = JSON.parse(JSON.stringify(ctx.request.body));
 
     const removeAll = await prisma.appAccessMenu.deleteMany({
       where: {
@@ -43,7 +49,7 @@ AccessMenuRouter.post("/", async (ctx, next) => {
     });
 
     const result = await prisma.appAccessMenu.createMany({
-      data: data.map((val) => {
+      data: access_menu.map((val) => {
         return {
           app_group_user_id: +app_group_user_id,
           app_menu_id: +(val.app_menu_id ?? 0),

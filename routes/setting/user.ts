@@ -2,7 +2,7 @@ import { hashSync } from "bcrypt";
 import Router from "koa-router";
 import validator from "validator";
 
-import { PrismaClient, StatusActive } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const UserRouter = new Router({ prefix: "/api/setting/user" });
@@ -13,25 +13,31 @@ UserRouter.get("/", async (ctx, next) => {
   const {
     username,
     name,
-    app_group_user_id,
+    app_group_user_id = 0,
+    status,
     limit = 10,
     offset = 0,
   }: {
     username?: string;
     name?: string;
     app_group_user_id?: number;
+    status?: string;
     limit?: number;
     offset?: number;
   } = ctx.query;
 
   const users = await prisma.users.findMany({
-    where: {
-      ...(username && { username: username }),
-      ...(name && { name: name }),
-      ...(app_group_user_id && { app_group_user_id: app_group_user_id }),
+    include: {
+      app_group_user: true,
     },
-    ...(limit !== 0 && { take: +limit }),
-    ...(offset !== 0 && { skip: +offset }),
+    where: {
+      ...(username && { username: { contains: username } }),
+      ...(name && { name: { contains: name } }),
+      ...(status && { status: status }),
+      ...(app_group_user_id != 0 && { app_group_user_id: +app_group_user_id }),
+    },
+    // ...(limit !== 0 && { take: +limit }),
+    // ...(offset !== 0 && { skip: +offset }),
   });
   return (ctx.body = { success: true, data: users });
 });
@@ -51,7 +57,7 @@ UserRouter.post("/", async (ctx, next) => {
       email?: string;
       username?: string;
       password?: string;
-      status?: StatusActive;
+      status?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
     if (app_group_user_id == 0) ctx.throw("Group User required", 400);
@@ -102,7 +108,7 @@ UserRouter.put("/:id", async (ctx, next) => {
       email?: string;
       username?: string;
       password?: string;
-      status?: StatusActive;
+      status?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
     if (id == 0) ctx.throw("ID Required", 400);

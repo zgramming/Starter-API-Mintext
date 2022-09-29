@@ -1,7 +1,7 @@
 import Router from "koa-router";
 import validator from "validator";
 
-import { PrismaClient, StatusActive } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -17,17 +17,18 @@ UserGroupRouter.get("/", async (ctx, next) => {
   }: {
     code?: string;
     name?: string;
-    status?: StatusActive;
+    status?: string;
     limit?: number;
     offset?: number;
   } = ctx.query;
+
   const userGroup = await prisma.appGroupUser.findMany({
     where: {
       ...(name && { name: name }),
       ...(status && { status: status }),
     },
-    ...(limit !== 0 && { take: +limit }),
-    ...(offset !== 0 && { skip: +offset }),
+    // ...(limit !== 0 && { take: +limit }),
+    // ...(offset !== 0 && { skip: 10 }),
   });
 
   return (ctx.body = { success: true, data: userGroup });
@@ -51,7 +52,7 @@ UserGroupRouter.post("/", async function (ctx, next) {
       data: {
         code: code ?? "",
         name: name ?? "",
-        status: (status ?? "active") as StatusActive,
+        status: (status ?? "active") as string,
       },
     });
 
@@ -91,7 +92,7 @@ UserGroupRouter.put("/:id", async function (ctx, next) {
       data: {
         code: code,
         name: name,
-        status: (status ?? "active") as StatusActive,
+        status: (status ?? "active") as string,
       },
     });
 

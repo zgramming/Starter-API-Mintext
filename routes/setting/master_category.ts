@@ -1,6 +1,6 @@
 import Router from "koa-router";
 import validator from "validator";
-import { PrismaClient, StatusActive } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const MasterCategoryRouter = new Router({
@@ -17,7 +17,7 @@ MasterCategoryRouter.get("/", async (ctx, next) => {
   }: {
     code?: string;
     name?: string;
-    status?: StatusActive;
+    status?: string;
     limit?: number;
     offset?: number;
   } = ctx.query;
@@ -48,7 +48,7 @@ MasterCategoryRouter.post("/", async (ctx, next) => {
       code?: string;
       name?: string;
       description?: string;
-      status?: StatusActive;
+      status?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
     if (validator.isEmpty(code)) ctx.throw("Code required", 400);
@@ -92,7 +92,7 @@ MasterCategoryRouter.put("/:id", async (ctx, next) => {
       code?: string;
       name?: string;
       description?: string;
-      status?: StatusActive;
+      status?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
     if (id == 0) ctx.throw("ID Required", 400);
