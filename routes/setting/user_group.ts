@@ -5,17 +5,29 @@ import { PrismaClient, StatusActive } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const UserGroupRouter = new Router({ prefix: "/setting/user_group" });
-
-UserGroupRouter.prefix("/setting/user_group");
+const UserGroupRouter = new Router({ prefix: "/api/setting/user_group" });
 
 UserGroupRouter.get("/", async (ctx, next) => {
-  const { name, status }: { name?: string; status?: StatusActive } = ctx.query;
+  const {
+    name,
+    status,
+    code,
+    limit = 10,
+    offset = 0,
+  }: {
+    code?: string;
+    name?: string;
+    status?: StatusActive;
+    limit?: number;
+    offset?: number;
+  } = ctx.query;
   const userGroup = await prisma.appGroupUser.findMany({
     where: {
       ...(name && { name: name }),
       ...(status && { status: status }),
     },
+    ...(limit !== 0 && { take: +limit }),
+    ...(offset !== 0 && { skip: +offset }),
   });
 
   return (ctx.body = { success: true, data: userGroup });

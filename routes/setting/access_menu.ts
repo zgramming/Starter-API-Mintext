@@ -4,7 +4,7 @@ import validator from "validator";
 import { PrismaClient, StatusActive } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const AccessMenuRouter = new Router({ prefix: "/setting/access_menu" });
+const AccessMenuRouter = new Router({ prefix: "/api/setting/access_menu" });
 
 AccessMenuRouter.get("/", async (ctx, next) => {
   const {

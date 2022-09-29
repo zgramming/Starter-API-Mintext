@@ -4,7 +4,7 @@ import { PrismaClient, StatusActive } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const MasterDataRouter = new Router({
-  prefix: "/setting/master_category",
+  prefix: "/api/setting/master_category",
 });
 
 MasterDataRouter.get("/", async (ctx, next) => {
@@ -13,11 +13,15 @@ MasterDataRouter.get("/", async (ctx, next) => {
     code,
     name,
     status = "active",
+    limit = 10,
+    offset = 0,
   }: {
     master_category_id?: number;
     code?: string;
     name?: string;
     status?: StatusActive;
+    limit?: number;
+    offset?: number;
   } = ctx.query;
 
   const result = await prisma.masterData.findMany({
@@ -27,6 +31,8 @@ MasterDataRouter.get("/", async (ctx, next) => {
       ...(name && { name: name }),
       ...(status && { status: status }),
     },
+    ...(limit !== 0 && { take: +limit }),
+    ...(offset !== 0 && { skip: +offset }),
   });
 
   return (ctx.body = { success: true, data: result });

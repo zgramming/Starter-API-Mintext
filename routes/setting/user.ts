@@ -1,11 +1,11 @@
-import { hashSync } from 'bcrypt';
-import Router from 'koa-router';
-import validator from 'validator';
+import { hashSync } from "bcrypt";
+import Router from "koa-router";
+import validator from "validator";
 
-import { PrismaClient, StatusActive } from '@prisma/client';
+import { PrismaClient, StatusActive } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const UserRouter = new Router({ prefix: "/setting/user" });
+const UserRouter = new Router({ prefix: "/api/setting/user" });
 
 const saltRounds = 10;
 
@@ -14,8 +14,15 @@ UserRouter.get("/", async (ctx, next) => {
     username,
     name,
     app_group_user_id,
-  }: { username?: string; name?: string; app_group_user_id?: number } =
-    ctx.query;
+    limit = 10,
+    offset = 0,
+  }: {
+    username?: string;
+    name?: string;
+    app_group_user_id?: number;
+    limit?: number;
+    offset?: number;
+  } = ctx.query;
 
   const users = await prisma.users.findMany({
     where: {
@@ -23,6 +30,8 @@ UserRouter.get("/", async (ctx, next) => {
       ...(name && { name: name }),
       ...(app_group_user_id && { app_group_user_id: app_group_user_id }),
     },
+    ...(limit !== 0 && { take: +limit }),
+    ...(offset !== 0 && { skip: +offset }),
   });
   return (ctx.body = { success: true, data: users });
 });

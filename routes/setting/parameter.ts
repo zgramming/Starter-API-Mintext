@@ -3,7 +3,7 @@ import validator from "validator";
 import { PrismaClient, StatusActive } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const ParameterRouter = new Router({ prefix: "/setting/parameter" });
+const ParameterRouter = new Router({ prefix: "/api/setting/parameter" });
 
 ParameterRouter.get("/", async (ctx, next) => {
   const {
@@ -11,11 +11,15 @@ ParameterRouter.get("/", async (ctx, next) => {
     name = "",
     value = "",
     status = "active",
+    limit = 10,
+    offset = 0,
   }: {
     code?: string;
     name?: string;
     value?: string;
     status?: StatusActive;
+    limit?: number;
+    offset?: number;
   } = ctx.query;
 
   const result = await prisma.parameter.findMany({
@@ -25,6 +29,8 @@ ParameterRouter.get("/", async (ctx, next) => {
       ...(value && { value: value }),
       ...(status && { status: status }),
     },
+    ...(limit !== 0 && { take: +limit }),
+    ...(offset !== 0 && { skip: +offset }),
   });
 
   return (ctx.body = { success: true, data: result });

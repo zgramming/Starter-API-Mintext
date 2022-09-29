@@ -4,14 +4,22 @@ import validator from "validator";
 import { PrismaClient, StatusActive } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const MenuRouter = new Router({ prefix: "/setting/menu" });
+const MenuRouter = new Router({ prefix: "/api/setting/menu" });
 
 MenuRouter.get("/", async (ctx, next) => {
   const {
     app_modul_id = 0,
     name = "",
     route = "",
-  }: { app_modul_id?: number; name?: string; route?: string } = ctx.query;
+    limit = 10,
+    offset = 0,
+  }: {
+    app_modul_id?: number;
+    name?: string;
+    route?: string;
+    limit?: number;
+    offset?: number;
+  } = ctx.query;
 
   const result = await prisma.appMenu.findMany({
     where: {
@@ -19,6 +27,8 @@ MenuRouter.get("/", async (ctx, next) => {
       ...(name && { name: name }),
       ...(route && { route: route }),
     },
+    ...(limit !== 0 && { take: +limit }),
+    ...(offset !== 0 && { skip: +offset }),
   });
   return (ctx.body = { success: true, data: result });
 });

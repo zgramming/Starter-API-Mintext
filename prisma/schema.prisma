@@ -115,6 +115,27 @@ model AppModul {
   @@map("app_modul")
 }
 
+model Documentation {
+  id         Int          @id @default(autoincrement())
+  name       String       @db.VarChar(100)
+  code       String       @unique @db.VarChar(50)
+  job_id     Int
+  birth_date DateTime
+  money      Decimal      @db.Decimal(19, 4)
+  hobbies    Json
+  status     StatusActive
+  image      String?       @db.Text
+  file       String?       @db.Text
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+  created_by Int?
+  updated_by Int?
+
+  job MasterData @relation(fields: [job_id], references: [id], onDelete: Cascade)
+
+  @@map("documentation")
+}
+
 model MasterCategory {
   id                 Int          @id @default(autoincrement())
   master_category_id Int?
@@ -158,9 +179,10 @@ model MasterData {
   created_by Int?
   updated_by Int?
 
-  masterCategory     MasterCategory @relation(fields: [master_category_id], references: [id], onDelete: Cascade)
-  masterDataParent   MasterData?    @relation(name: "master_data", fields: [master_data_id], references: [id], onDelete: Cascade)
-  masterDataChildren MasterData[]   @relation(name: "master_data")
+  masterCategory     MasterCategory  @relation(fields: [master_category_id], references: [id], onDelete: Cascade)
+  masterDataParent   MasterData?     @relation(name: "master_data", fields: [master_data_id], references: [id], onDelete: Cascade)
+  masterDataChildren MasterData[]    @relation(name: "master_data")
+  jobsDocumentation  Documentation[]
 
   @@map("master_data")
 }

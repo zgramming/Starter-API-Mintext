@@ -3,7 +3,7 @@ import validator from "validator";
 import { PrismaClient, StatusActive } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const ModulRouter = new Router({ prefix: "/setting/modul" });
+const ModulRouter = new Router({ prefix: "/api/setting/modul" });
 
 ModulRouter.get("/", async (ctx, next) => {
   const {
@@ -11,11 +11,15 @@ ModulRouter.get("/", async (ctx, next) => {
     name = "",
     pattern = "",
     status = "active",
+    limit = 10,
+    offset = 0,
   }: {
     code?: string;
     name?: string;
     pattern?: string;
     status?: StatusActive;
+    limit?: number;
+    offset?: number;
   } = ctx.query;
 
   const result = await prisma.appModul.findMany({
@@ -25,6 +29,8 @@ ModulRouter.get("/", async (ctx, next) => {
       ...(pattern && { pattern: pattern }),
       ...(status && { status: status }),
     },
+    ...(limit !== 0 && { take: +limit }),
+    ...(offset !== 0 && { skip: +offset }),
   });
 
   return (ctx.body = { success: true, data: result });
