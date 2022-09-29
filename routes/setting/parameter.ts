@@ -10,9 +10,9 @@ ParameterRouter.get("/", async (ctx, next) => {
     code = "",
     name = "",
     value = "",
-    status = "active",
-    limit = 10,
-    offset = 0,
+    status,
+    limit,
+    offset,
   }: {
     code?: string;
     name?: string;
@@ -24,13 +24,13 @@ ParameterRouter.get("/", async (ctx, next) => {
 
   const result = await prisma.parameter.findMany({
     where: {
-      ...(code && { code: code }),
-      ...(name && { name: name }),
-      ...(value && { value: value }),
+      ...(code && { code: { contains: code } }),
+      ...(name && { name: { contains: name } }),
+      ...(value && { value: { contains: value } }),
       ...(status && { status: status }),
     },
-    ...(limit !== 0 && { take: +limit }),
-    ...(offset !== 0 && { skip: +offset }),
+    ...(limit && { take: +limit }),
+    ...(offset && { skip: +offset }),
   });
 
   return (ctx.body = { success: true, data: result });
@@ -98,7 +98,8 @@ ParameterRouter.put("/", async (ctx, next) => {
     if (validator.isEmpty(value)) ctx.throw("Value required", 400);
     if (validator.isEmpty(status)) ctx.throw("Status required", 400);
 
-    const result = await prisma.parameter.create({
+    const result = await prisma.parameter.update({
+      where: { id: +id },
       data: {
         code,
         name,

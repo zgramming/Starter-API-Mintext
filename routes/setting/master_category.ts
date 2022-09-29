@@ -11,7 +11,7 @@ MasterCategoryRouter.get("/", async (ctx, next) => {
   const {
     code = "",
     name = "",
-    status = "active",
+    status,
     limit = 10,
     offset = 0,
   }: {
@@ -24,12 +24,12 @@ MasterCategoryRouter.get("/", async (ctx, next) => {
 
   const result = await prisma.masterCategory.findMany({
     where: {
-      ...(code && { code: code }),
-      ...(name && { name: name }),
+      ...(code && { code: { contains: code } }),
+      ...(name && { name: { contains: name } }),
       ...(status && { status: status }),
     },
-    ...(limit !== 0 && { take: +limit }),
-    ...(offset !== 0 && { skip: +offset }),
+    // ...(limit !== 0 && { take: +limit }),
+    // ...(offset !== 0 && { skip: +offset }),
   });
 
   return (ctx.body = { success: true, data: result });
@@ -38,7 +38,7 @@ MasterCategoryRouter.get("/", async (ctx, next) => {
 MasterCategoryRouter.post("/", async (ctx, next) => {
   try {
     const {
-      master_category_id,
+      master_category_id = 0,
       code = "",
       name = "",
       description = "",
@@ -57,7 +57,9 @@ MasterCategoryRouter.post("/", async (ctx, next) => {
     const result = await prisma.masterCategory.create({
       data: {
         description: description,
-        master_category_id: master_category_id && +master_category_id,
+        ...(master_category_id != 0 && {
+          master_category_id: +master_category_id,
+        }),
         status: status,
         code: code,
         name: name,
@@ -82,7 +84,7 @@ MasterCategoryRouter.put("/:id", async (ctx, next) => {
   try {
     const { id = 0 }: { id?: number } = ctx.params;
     const {
-      master_category_id,
+      master_category_id = 0,
       code = "",
       name = "",
       description = "",
@@ -107,7 +109,9 @@ MasterCategoryRouter.put("/:id", async (ctx, next) => {
         code: code,
         name: name,
         description: description,
-        master_category_id: master_category_id && +master_category_id,
+        ...(master_category_id != 0 && {
+          master_category_id: +master_category_id,
+        }),
         status: status,
       },
     });

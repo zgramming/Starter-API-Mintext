@@ -2,7 +2,7 @@ import { hashSync } from "bcrypt";
 import Router from "koa-router";
 import validator from "validator";
 
-import { PrismaClient } from "@prisma/client";
+  import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const UserRouter = new Router({ prefix: "/api/setting/user" });
