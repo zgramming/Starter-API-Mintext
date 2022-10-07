@@ -110,20 +110,21 @@ model AppModul {
 }
 
 model Documentation {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(100)
-  code       String   @unique @db.VarChar(50)
-  job_id     Int
-  birth_date DateTime
-  money      Decimal  @db.Decimal(19, 4)
-  hobbies    Json
-  status     String   @default("active")
-  image      String?  @db.Text
-  file       String?  @db.Text
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  created_by Int?
-  updated_by Int?
+  id            Int      @id @default(autoincrement())
+  name          String   @db.VarChar(100)
+  code          String   @unique @db.VarChar(50)
+  job_id        Int
+  birth_date    DateTime
+  money         Decimal  @db.Decimal(19, 4)
+  hobbies       Json
+  description String?  @db.Text()
+  status        String   @default("active")
+  image         String?  @db.Text
+  file          String?  @db.Text
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  created_by    Int?
+  updated_by    Int?
 
   job MasterData @relation(fields: [job_id], references: [id], onDelete: Cascade)
 

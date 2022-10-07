@@ -4,19 +4,21 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const MasterDataRouter = new Router({
-  prefix: "/api/setting/master_category",
+  prefix: "/api/setting/master_data",
 });
 
 MasterDataRouter.get("/", async (ctx, next) => {
   const {
     master_category_id,
+    master_category_code,
     code,
     name,
-    status = "active",
+    status,
     limit = 10,
     offset = 0,
   }: {
     master_category_id?: number;
+    master_category_code?: string;
     code?: string;
     name?: string;
     status?: string;
@@ -26,15 +28,20 @@ MasterDataRouter.get("/", async (ctx, next) => {
 
   const result = await prisma.masterData.findMany({
     where: {
+      ...(master_category_code && { master_category_code: master_category_code }),
       ...(master_category_id && { master_category_id: +master_category_id }),
       ...(code && { code: code }),
       ...(name && { name: name }),
       ...(status && { status: status }),
     },
-    ...(limit !== 0 && { take: +limit }),
-    ...(offset !== 0 && { skip: +offset }),
+    include: {
+      masterCategory: true,
+      masterDataChildren: true,
+      masterDataParent: true,
+    },
+    // ...(limit !== 0 && { take: +limit }),
+    // ...(offset !== 0 && { skip: +offset }),
   });
-
   return (ctx.body = { success: true, data: result });
 });
 
@@ -42,7 +49,6 @@ MasterDataRouter.post("/", async (ctx, next) => {
   try {
     const {
       master_data_id,
-      master_category_id = 0,
       master_category_code = "",
       code = "",
       name = "",
@@ -56,7 +62,6 @@ MasterDataRouter.post("/", async (ctx, next) => {
       parameter3_value,
     }: {
       master_data_id?: number;
-      master_category_id?: number;
       master_category_code?: string;
       code?: string;
       name?: string;
@@ -70,17 +75,22 @@ MasterDataRouter.post("/", async (ctx, next) => {
       parameter3_value?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
-    if (master_category_id == 0 || validator.isEmpty(master_category_code)) {
+    if (validator.isEmpty(master_category_code)) {
       ctx.throw("Master Data Required", 400);
     }
     if (validator.isEmpty(code)) ctx.throw("Code required", 400);
     if (validator.isEmpty(name)) ctx.throw("Name required", 400);
 
+    const masterCategory = await prisma.masterCategory.findFirst({
+      where: { code: master_category_code },
+    });
+    if (!masterCategory) ctx.throw("Master Kategori tidak valid", 400);
+
     const result = await prisma.masterData.create({
       data: {
         master_data_id: master_data_id && +master_data_id,
-        master_category_id: +master_category_id,
-        master_category_code,
+        master_category_id: +masterCategory!.id,
+        master_category_code: masterCategory!.code,
         code,
         name,
         description,
@@ -113,8 +123,6 @@ MasterDataRouter.put("/:id", async (ctx, next) => {
     const { id = 0 }: { id?: number } = ctx.params;
     const {
       master_data_id,
-      master_category_id = 0,
-      master_category_code = "",
       code = "",
       name = "",
       description = "",
@@ -141,9 +149,6 @@ MasterDataRouter.put("/:id", async (ctx, next) => {
       parameter3_value?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
-    if (master_category_id == 0 || validator.isEmpty(master_category_code)) {
-      ctx.throw("Master Data Required", 400);
-    }
     if (validator.isEmpty(code)) ctx.throw("Code required", 400);
     if (validator.isEmpty(name)) ctx.throw("Name required", 400);
 
@@ -153,8 +158,6 @@ MasterDataRouter.put("/:id", async (ctx, next) => {
       },
       data: {
         master_data_id: master_data_id && +master_data_id,
-        master_category_id: +master_category_id,
-        master_category_code,
         code,
         name,
         description,

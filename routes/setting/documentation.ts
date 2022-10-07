@@ -12,7 +12,7 @@ DocumentationRouter.get("/", async (ctx, next) => {
     code = "",
     name = "",
     job_id,
-    status = "active",
+    status,
     limit = 10,
     offset = 0,
   }: {
@@ -40,9 +40,6 @@ DocumentationRouter.get("/", async (ctx, next) => {
 
 DocumentationRouter.post("/", async (ctx, next) => {
   try {
-    console.log({
-      files: ctx.request.files,
-    });
     const {
       code = "",
       name = "",
@@ -50,6 +47,7 @@ DocumentationRouter.post("/", async (ctx, next) => {
       birth_date = "",
       money = 0,
       hobbies = [],
+      description,
       status = "active",
     }: {
       code?: string;
@@ -58,6 +56,7 @@ DocumentationRouter.post("/", async (ctx, next) => {
       birth_date?: string;
       money?: number;
       hobbies?: string[];
+      description?: string;
       status?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
@@ -74,6 +73,7 @@ DocumentationRouter.post("/", async (ctx, next) => {
         birth_date,
         money: +money,
         hobbies: hobbies,
+        description,
         status,
       },
     });
@@ -102,6 +102,7 @@ DocumentationRouter.put("/:id", async (ctx, next) => {
       birth_date = "",
       money = 0,
       hobbies = [],
+      description,
       status = "active",
     }: {
       code?: string;
@@ -110,6 +111,7 @@ DocumentationRouter.put("/:id", async (ctx, next) => {
       birth_date?: string;
       money?: number;
       hobbies?: string[];
+      description?: string;
       status?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
@@ -118,7 +120,8 @@ DocumentationRouter.put("/:id", async (ctx, next) => {
     if (job_id == 0) ctx.throw("Job required", 400);
     if (validator.isEmpty(status)) ctx.throw("Status required", 400);
 
-    const result = await prisma.documentation.create({
+    const result = await prisma.documentation.update({
+      where: { id: +id },
       data: {
         name: name,
         code: code,
@@ -126,6 +129,7 @@ DocumentationRouter.put("/:id", async (ctx, next) => {
         birth_date,
         money: +money,
         hobbies: hobbies,
+        description,
         status,
       },
     });

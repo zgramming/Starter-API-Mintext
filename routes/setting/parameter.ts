@@ -11,7 +11,7 @@ ParameterRouter.get("/", async (ctx, next) => {
     name = "",
     value = "",
     status,
-    limit,
+    limit,    
     offset,
   }: {
     code?: string;
