@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "watch": "npx nodemon app.ts"
+  },
   "devDependencies": {
     "@types/koa-bodyparser": "^4.3.8",
     "@types/koa-json": "^2.0.20",
@@ -17,10 +20,12 @@
     "@types/koa-cors": "^0.0.2",
     "@types/validator": "^13.7.7",
     "bcrypt": "^5.0.1",
+    "fastest-validator": "^1.15.0",
     "koa": "^2.13.4",
     "koa-body": "^5.0.0",
     "koa-bodyparser": "^4.3.0",
     "koa-combine-routers": "^4.0.2",
+    "koa-compose": "^4.1.0",
     "koa-helmet": "^6.1.0",
     "koa-json": "^2.0.2",
     "koa-logger": "^3.2.1",
