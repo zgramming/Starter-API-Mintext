@@ -46,7 +46,7 @@ MenuRouter.post("/", async (ctx, next) => {
   try {
     const {
       app_modul_id = 0,
-      app_menu_id_parent = 0,
+      app_menu_id_parent,
       code = "",
       name = "",
       route = "",
