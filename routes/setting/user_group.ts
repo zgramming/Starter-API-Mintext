@@ -27,6 +27,11 @@ UserGroupRouter.get("/", async (ctx, next) => {
       ...(name && { name: name }),
       ...(status && { status: status }),
     },
+    include: {
+      user: true,
+      access_menu: true,
+      access_modul: true,
+    },
     // ...(limit !== 0 && { take: +limit }),
     // ...(offset !== 0 && { skip: 10 }),
   });

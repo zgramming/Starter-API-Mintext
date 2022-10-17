@@ -1,5 +1,4 @@
 import Router from "koa-router";
-import validator from "validator";
 
 import { PrismaClient } from "@prisma/client";
 
@@ -18,12 +17,34 @@ AccessMenuRouter.get("/", async (ctx, next) => {
   } = ctx.query;
 
   const result = await prisma.appAccessMenu.findMany({
+    include: {
+      app_modul: true,
+      app_menu: true,
+      app_group_user: true,
+    },
     where: {
       ...(app_group_user_id != 0 && { app_group_user_id: +app_group_user_id }),
       ...(app_modul_id != 0 && { app_modul_id: +app_modul_id }),
       ...(app_menu_id != 0 && { app_menu_id: +app_menu_id }),
     },
   });
+  return (ctx.body = { success: true, data: result });
+});
+
+AccessMenuRouter.get("/by_user_group/:app_group_user_id", async (ctx, next) => {
+  const { app_group_user_id } = ctx.params;
+
+  const result = await prisma.appAccessMenu.findMany({
+    include: {
+      app_group_user: true,
+      app_menu: true,
+      app_modul: true,
+    },
+    where: {
+      app_group_user_id: +(app_group_user_id ?? "0"),
+    },
+  });
+
   return (ctx.body = { success: true, data: result });
 });
 

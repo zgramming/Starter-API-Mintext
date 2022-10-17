@@ -24,9 +24,9 @@ MasterCategoryRouter.get("/", async (ctx, next) => {
 
   const result = await prisma.masterCategory.findMany({
     include: {
-      masterDatas: true,
-      masterCategoryChildren: true,
-      masterCategoryParent: true,
+      master_datas: true,
+      master_category_children: true,
+      master_category_parent: true,
     },
     where: {
       ...(code && { code: { contains: code } }),

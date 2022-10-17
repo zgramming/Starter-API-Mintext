@@ -33,8 +33,10 @@ MenuRouter.get("/", async (ctx, next) => {
     ...(limit != 0 && { take: +limit }),
     ...(offset != 0 && { skip: +offset }),
     include: {
-      menuParent: true,
-      appModul: true,
+      menu_parent: true,
+      app_modul: true,
+      access_menu: true,
+      menu_childrens: true,
     },
   });
   return (ctx.body = { success: true, data: result });
@@ -127,7 +129,7 @@ MenuRouter.put("/:id", async (ctx, next) => {
       where: { id: +id },
       data: {
         app_modul_id: +app_modul_id,
-        ...(app_menu_id_parent  && {
+        ...(app_menu_id_parent && {
           app_menu_id_parent: app_menu_id_parent,
         }),
         code: code,

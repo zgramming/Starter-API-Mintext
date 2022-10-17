@@ -1,5 +1,4 @@
 import Router from "koa-router";
-import validator from "validator";
 
 import { PrismaClient } from "@prisma/client";
 
@@ -12,12 +11,37 @@ AccessModulRouter.get("/", async (ctx, next) => {
   }: { app_group_user_id?: number; app_modul_id?: number } = ctx.query;
 
   const result = await prisma.appAccessModul.findMany({
+    include: {
+      app_group_user: true,
+      app_modul: true,
+    },
     where: {
-      ...(app_group_user_id && { app_group_user_id: + app_group_user_id }),
+      ...(app_group_user_id && { app_group_user_id: +app_group_user_id }),
     },
   });
   return (ctx.body = { success: true, data: result });
 });
+
+AccessModulRouter.get(
+  "/by_user_group/:app_group_user_id",
+  async (context, next) => {
+    const { app_group_user_id } = context.params;
+    const result = await prisma.appAccessModul.findMany({
+      where: {
+        app_group_user_id: +(app_group_user_id ?? "0"),
+      },
+      include: {
+        app_group_user: true,
+        app_modul: {
+          include: { menus: true, access_menu: true, access_modul: true },
+        },
+      },
+    });
+    context.body = {
+      data: result,
+    };
+  }
+);
 
 AccessModulRouter.post("/", async (ctx, next) => {
   try {
@@ -41,7 +65,7 @@ AccessModulRouter.post("/", async (ctx, next) => {
       data: access_modul.map((val) => {
         return {
           app_group_user_id: +app_group_user_id,
-          app_modul_id: + val,
+          app_modul_id: +val,
         };
       }),
     });

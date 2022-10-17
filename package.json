@@ -1,6 +1,9 @@
 {
   "scripts": {
-    "watch": "npx nodemon app.ts"
+    "watch": "npx nodemon app.ts",
+    "prisma:generate" :"npx prisma generate",
+    "prisma:format" :"npx prisma format",
+    "prisma:migrate" :"npx prisma migrate dev --name init"
   },
   "devDependencies": {
     "@types/koa-bodyparser": "^4.3.8",

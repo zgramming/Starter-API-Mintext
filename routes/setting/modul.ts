@@ -31,7 +31,8 @@ ModulRouter.get("/", async (ctx, next) => {
     },
     include: {
       menus: true,
-      
+      access_menu: true,
+      access_modul: true,
     },
     // ...(limit !== 0 && { take: +limit }),
     // ...(offset !== 0 && { skip: +offset }),

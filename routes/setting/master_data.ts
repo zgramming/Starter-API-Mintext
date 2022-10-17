@@ -28,16 +28,18 @@ MasterDataRouter.get("/", async (ctx, next) => {
 
   const result = await prisma.masterData.findMany({
     where: {
-      ...(master_category_code && { master_category_code: master_category_code }),
+      ...(master_category_code && {
+        master_category_code: master_category_code,
+      }),
       ...(master_category_id && { master_category_id: +master_category_id }),
       ...(code && { code: code }),
       ...(name && { name: name }),
       ...(status && { status: status }),
     },
     include: {
-      masterCategory: true,
-      masterDataChildren: true,
-      masterDataParent: true,
+      master_category: true,
+      master_data_children: true,
+      master_data_parent: true,
     },
     // ...(limit !== 0 && { take: +limit }),
     // ...(offset !== 0 && { skip: +offset }),

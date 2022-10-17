@@ -22,9 +22,9 @@ model AppGroupUser {
   created_by Int?
   updated_by Int?
 
-  user        Users[]
-  accessModul AppAccessModul[]
-  accessMenu  AppAccessMenu[]
+  user         Users[]
+  access_modul AppAccessModul[]
+  access_menu  AppAccessMenu[]
 
   @@map("app_group_user")
 }
@@ -41,9 +41,9 @@ model AppAccessMenu {
   created_by Int?
   updated_by Int?
 
-  appGroupUser AppGroupUser @relation(fields: [app_group_user_id], references: [id], onDelete: Cascade)
-  appModul     AppModul     @relation(fields: [app_modul_id], references: [id], onDelete: Cascade)
-  appMenu      AppMenu      @relation(fields: [app_menu_id], references: [id], onDelete: Cascade)
+  app_group_user AppGroupUser @relation(fields: [app_group_user_id], references: [id], onDelete: Cascade)
+  app_modul      AppModul     @relation(fields: [app_modul_id], references: [id], onDelete: Cascade)
+  app_menu       AppMenu      @relation(fields: [app_menu_id], references: [id], onDelete: Cascade)
 
   @@map("app_access_menu")
 }
@@ -64,10 +64,10 @@ model AppMenu {
   created_by Int?
   updated_by Int?
 
-  appModul      AppModul        @relation(fields: [app_modul_id], references: [id], onDelete: Cascade)
-  menuParent    AppMenu?        @relation(name: "parent_children", fields: [app_menu_id_parent], references: [id], onDelete: Cascade)
-  menuChildrens AppMenu[]       @relation(name: "parent_children")
-  accessMenu    AppAccessMenu[]
+  app_modul      AppModul        @relation(fields: [app_modul_id], references: [id], onDelete: Cascade)
+  menu_parent    AppMenu?        @relation(name: "parent_children", fields: [app_menu_id_parent], references: [id], onDelete: Cascade)
+  menu_childrens AppMenu[]       @relation(name: "parent_children")
+  access_menu    AppAccessMenu[]
 
   @@map("app_menu")
 }
@@ -82,8 +82,8 @@ model AppAccessModul {
   created_by Int?
   updated_by Int?
 
-  appGroupUser AppGroupUser @relation(fields: [app_group_user_id], references: [id], onDelete: Cascade)
-  appModul     AppModul     @relation(fields: [app_modul_id], references: [id], onDelete: Cascade)
+  app_group_user AppGroupUser @relation(fields: [app_group_user_id], references: [id], onDelete: Cascade)
+  app_modul      AppModul     @relation(fields: [app_modul_id], references: [id], onDelete: Cascade)
 
   @@map("app_access_modul")
 }
@@ -103,28 +103,28 @@ model AppModul {
   updated_by Int?
 
   menus        AppMenu[]
-  accessModuls AppAccessModul[]
-  accessMenus  AppAccessMenu[]
+  access_modul AppAccessModul[]
+  access_menu  AppAccessMenu[]
 
   @@map("app_modul")
 }
 
 model Documentation {
-  id            Int      @id @default(autoincrement())
-  name          String   @db.VarChar(100)
-  code          String   @unique @db.VarChar(50)
-  job_id        Int
-  birth_date    DateTime
-  money         Decimal  @db.Decimal(19, 4)
-  hobbies       Json
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  code        String   @unique @db.VarChar(50)
+  job_id      Int
+  birth_date  DateTime
+  money       Decimal  @db.Decimal(19, 4)
+  hobbies     Json
   description String?  @db.Text()
-  status        String   @default("active")
-  image         String?  @db.Text
-  file          String?  @db.Text
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  created_by    Int?
-  updated_by    Int?
+  status      String   @default("active")
+  image       String?  @db.Text
+  file        String?  @db.Text
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  created_by  Int?
+  updated_by  Int?
 
   job MasterData @relation(fields: [job_id], references: [id], onDelete: Cascade)
 
@@ -146,9 +146,9 @@ model MasterCategory {
   updated_by Int?
 
   /// Relationship
-  masterCategoryParent   MasterCategory?  @relation(name: "category", fields: [master_category_id], references: [id], onDelete: Cascade)
-  masterCategoryChildren MasterCategory[] @relation(name: "category")
-  masterDatas            MasterData[]
+  master_category_parent   MasterCategory?  @relation(name: "category", fields: [master_category_id], references: [id], onDelete: Cascade)
+  master_category_children MasterCategory[] @relation(name: "category")
+  master_datas             MasterData[]
 
   @@map("master_category")
 }
@@ -174,10 +174,10 @@ model MasterData {
   created_by Int?
   updated_by Int?
 
-  masterCategory     MasterCategory  @relation(fields: [master_category_id], references: [id], onDelete: Cascade)
-  masterDataParent   MasterData?     @relation(name: "master_data", fields: [master_data_id], references: [id], onDelete: Cascade)
-  masterDataChildren MasterData[]    @relation(name: "master_data")
-  jobsDocumentation  Documentation[]
+  master_category      MasterCategory  @relation(fields: [master_category_id], references: [id], onDelete: Cascade)
+  master_data_parent   MasterData?     @relation(name: "master_data", fields: [master_data_id], references: [id], onDelete: Cascade)
+  master_data_children MasterData[]    @relation(name: "master_data")
+  jobsDocumentation    Documentation[]
 
   @@map("master_data")
 }
