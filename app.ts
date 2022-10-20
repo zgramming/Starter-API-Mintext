@@ -8,6 +8,7 @@ import Logger from 'koa-logger';
 import AccessMenuRouter from './routes/setting/access_menu';
 import AccessModulRouter from './routes/setting/access_modul';
 import DocumentationRouter from './routes/setting/documentation';
+import LoginRouter from './routes/setting/login';
 import MasterCategoryRouter from './routes/setting/master_category';
 import MasterDataRouter from './routes/setting/master_data';
 import MenuRouter from './routes/setting/menu';
@@ -39,6 +40,8 @@ app.use(KoaCompose([MasterCategoryRouter.routes(), MasterCategoryRouter.allowedM
 app.use(KoaCompose([MasterDataRouter.routes(), MasterDataRouter.allowedMethods()]));
 app.use(KoaCompose([ParameterRouter.routes(), ParameterRouter.allowedMethods()]));
 app.use(KoaCompose([DocumentationRouter.routes(), DocumentationRouter.allowedMethods()]));
+
+app.use(KoaCompose([LoginRouter.routes(),LoginRouter.allowedMethods()]))
 
 
 

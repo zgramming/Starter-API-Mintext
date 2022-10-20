@@ -1,4 +1,6 @@
 import { PrismaClient } from "@prisma/client";
+import { hashSync } from "bcrypt";
+const saltRounds = 10;
 
 const prisma = new PrismaClient();
 
@@ -16,7 +18,7 @@ const UsersSeeder = async () => {
       name: "Zeffry Reynando",
       email: "zeffry.reynando@gmail.com",
       username: "zeffry",
-      password: "zeffry",
+      password: hashSync("zeffry", saltRounds),
       status: "active",
     },
   ];
