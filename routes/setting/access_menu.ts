@@ -43,6 +43,9 @@ AccessMenuRouter.get("/by_user_group/:app_group_user_id", async (ctx, next) => {
     where: {
       app_group_user_id: +(app_group_user_id ?? "0"),
     },
+    orderBy: {
+      app_menu: { order: "asc" },
+    },
   });
 
   return (ctx.body = { success: true, data: result });
@@ -69,15 +72,19 @@ AccessMenuRouter.post("/", async (ctx, next) => {
       },
     });
 
-    const result = await prisma.appAccessMenu.createMany({
-      data: access_menu.map((val) => {
+    const data = access_menu
+      .map((val) => {
         return {
           app_group_user_id: +app_group_user_id,
           app_menu_id: +(val.app_menu_id ?? 0),
           app_modul_id: +(val.app_modul_id ?? 0),
-          allowed_access: val.allowed_access,
+          allowed_access: val.allowed_access ?? [],
         };
-      }),
+      })
+      .filter((val) => val.allowed_access.length != 0);
+
+    const result = await prisma.appAccessMenu.createMany({
+      data: data,
     });
 
     return (ctx.body = {
