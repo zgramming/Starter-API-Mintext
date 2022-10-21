@@ -13,6 +13,7 @@ const UserGroupSeeder = async () => {
   const data: UserGroupData[] = [
     { name: "Superadmin", code: "superadmin", status: "active" },
     { name: "Administrator", code: "administrator", status: "active" },
+    { name: "Human Resource Development", code: "hrd", status: "active" },
   ];
   await prisma.appGroupUser.createMany({ data: data });
 };

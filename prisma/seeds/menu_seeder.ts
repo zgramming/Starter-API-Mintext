@@ -51,6 +51,20 @@ const MenuSeeder = async () => {
       route: "/cv/license_and_certificate",
       order: 5,
     },
+    {
+      app_modul_id: modulCV?.id ?? 0,
+      code: "CV_PORTFOLIO",
+      name: "Portfolio",
+      route: "/cv/portfolio",
+      order: 6,
+    },
+    {
+      app_modul_id: modulCV?.id ?? 0,
+      code: "CV_PREVIEW",
+      name: "Preview",
+      route: "/cv/preview",
+      order: 7,
+    },
   ];
 
   const settingMenu = [

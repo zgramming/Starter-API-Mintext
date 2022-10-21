@@ -36,6 +36,11 @@ AccessModulRouter.get(
           include: { menus: true, access_menu: true, access_modul: true },
         },
       },
+      orderBy: {
+        app_modul: {
+          order: "asc",
+        },
+      },
     });
     context.body = {
       data: result,

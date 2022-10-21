@@ -178,6 +178,7 @@ model MasterData {
   master_data_parent   MasterData?     @relation(name: "master_data", fields: [master_data_id], references: [id], onDelete: Cascade)
   master_data_children MasterData[]    @relation(name: "master_data")
   jobsDocumentation    Documentation[]
+  CVSkill              CVSkill[]
 
   @@map("master_data")
 }
@@ -212,7 +213,126 @@ model Users {
   created_by Int?
   updated_by Int?
 
-  app_group_user AppGroupUser @relation(fields: [app_group_user_id], references: [id], onDelete: Cascade)
+  app_group_user AppGroupUser   @relation(fields: [app_group_user_id], references: [id], onDelete: Cascade)
+  CVProfile      CVProfile[]
+  CVEducation    CVEducation[]
+  CVExperience   CVExperience[]
+  CVSkill        CVSkill[]
+  CVPortfolio    CVPortfolio[]
 
   @@map("users")
+}
+
+//! Aplikasi
+
+model CVEducation {
+  id           String    @id @default(uuid())
+  users_id     Int
+  name         String    @db.VarChar(100) // SMK Negeri 1 Kota Bekasi
+  major        String    @db.VarChar(100) // System Information 
+  unit         String    @db.VarChar(100) // Vocational High School, Associate Degree
+  start_date   DateTime
+  end_date     DateTime?
+  is_graduated Boolean   @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  created_by Int?
+  updated_by Int?
+
+  user Users @relation(fields: [users_id], references: [id], onDelete: Cascade)
+
+  @@map("cv_education")
+}
+
+model CVExperience {
+  id            String    @id @default(uuid())
+  users_id      Int
+  company       String    @db.VarChar(100)
+  job           String    @db.VarChar(100)
+  start_date    DateTime
+  end_date      DateTime?
+  description   String?   @db.LongText()
+  image_company String?   @db.Text()
+  is_graduated  Boolean   @default(false)
+  tags          Json?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  created_by    Int?
+  updated_by    Int?
+
+  user Users @relation(fields: [users_id], references: [id], onDelete: Cascade)
+
+  @@map("cv_experience")
+}
+
+model CVPortfolio {
+  id             String           @id @default(uuid())
+  users_id       Int
+  title          String           @db.VarChar(100)
+  slug           String           @db.VarChar(100)
+  description    String           @db.LongText()
+  image          String?          @db.Text()
+  tags           Json?
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @updatedAt
+  created_by     Int?
+  updated_by     Int?
+  user           Users            @relation(fields: [users_id], references: [id], onDelete: Cascade)
+  CVPortfolioUrl CVPortfolioUrl[]
+
+  @@map("cv_portfolio")
+}
+
+model CVPortfolioUrl {
+  id             String   @id @default(uuid())
+  users_id       Int
+  cvportfolio_id String
+  name           String   @db.VarChar(100)
+  url            String   @db.Text()
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  created_by     Int?
+  updated_by     Int?
+
+  portfolio CVPortfolio @relation(fields: [cvportfolio_id], references: [id], onDelete: Cascade)
+
+  @@map("cv_portfolio_url")
+}
+
+model CVProfile {
+  id          String   @id @default(uuid())
+  users_id    Int
+  name        String   @db.VarChar(100)
+  motto       String   @db.Text()
+  description String?  @db.LongText()
+  phone       String?
+  email       String?
+  web         String?
+  address     String?
+  image       String?  @db.Text()
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  created_by  Int?
+  updated_by  Int?
+
+  user Users @relation(fields: [users_id], references: [id], onDelete: Cascade)
+
+  @@map("cv_profile")
+}
+
+model CVSkill {
+  id         String   @id @default(uuid())
+  users_id   Int
+  name       String   @db.VarChar(100)
+  level_id   Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  created_by Int?
+  updated_by Int?
+
+  user  Users      @relation(fields: [users_id], references: [id], onDelete: Cascade)
+  level MasterData @relation(fields: [level_id], references: [id], onDelete: Cascade)
+
+  @@map("cv_skill")
 }
