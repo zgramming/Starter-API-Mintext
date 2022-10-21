@@ -37,7 +37,9 @@ AccessMenuRouter.get("/by_user_group/:app_group_user_id", async (ctx, next) => {
   const result = await prisma.appAccessMenu.findMany({
     include: {
       app_group_user: true,
-      app_menu: true,
+      app_menu: {
+        include: { menu_childrens: true } ,
+      },
       app_modul: true,
     },
     where: {
