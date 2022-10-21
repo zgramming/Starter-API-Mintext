@@ -12,9 +12,19 @@ const UsersSeeder = async () => {
     },
   });
 
+  const user = await prisma.appGroupUser.findFirst({ where: { code: "user" } });
+
   const data = [
     {
       app_group_user_id: superadmin?.id ?? 0,
+      name: "Superadmin",
+      email: "superadmin@gmail.com",
+      username: "superadmin",
+      password: hashSync("superadmin", saltRounds),
+      status: "active",
+    },
+    {
+      app_group_user_id: user?.id ?? 0,
       name: "Zeffry Reynando",
       email: "zeffry.reynando@gmail.com",
       username: "zeffry",
