@@ -33,17 +33,22 @@ AccessMenuRouter.get("/", async (ctx, next) => {
 
 AccessMenuRouter.get("/by_user_group/:app_group_user_id", async (ctx, next) => {
   const { app_group_user_id } = ctx.params;
+  const { route }: { route?: string } = ctx.query;
+  const routeModul = !route
+    ? undefined
+    : "/" + route.split("/").filter((val) => val !== "")[0];
 
   const result = await prisma.appAccessMenu.findMany({
     include: {
       app_group_user: true,
       app_menu: {
-        include: { menu_childrens: true } ,
+        include: { menu_childrens: true },
       },
       app_modul: true,
     },
     where: {
-      app_group_user_id: +(app_group_user_id ?? "0"),
+      app_group_user_id: +(app_group_user_id ?? 0),
+      app_modul: { pattern: routeModul },
     },
     orderBy: {
       app_menu: { order: "asc" },

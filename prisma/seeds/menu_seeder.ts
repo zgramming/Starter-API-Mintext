@@ -9,8 +9,51 @@ const MenuSeeder = async () => {
       code: "SETTING",
     },
   });
+  const modulCV = await prisma.appModul.findFirst({
+    where: {
+      code: "CV",
+    },
+  });
 
-  const data = [
+  const curriculumVitaeMenu = [
+    {
+      app_modul_id: modulCV?.id ?? 0,
+      code: "CV_PROFILE",
+      name: "Profile",
+      route: "/cv/profile",
+      order: 1,
+    },
+    {
+      app_modul_id: modulCV?.id ?? 0,
+      code: "CV_EXPERIENCE",
+      name: "Experience",
+      route: "/cv/experience",
+      order: 2,
+    },
+    {
+      app_modul_id: modulCV?.id ?? 0,
+      code: "CV_EDUCATION",
+      name: "Education",
+      route: "/cv/education",
+      order: 3,
+    },
+    {
+      app_modul_id: modulCV?.id ?? 0,
+      code: "CV_SKILL",
+      name: "Skill",
+      route: "/cv/skill",
+      order: 4,
+    },
+    {
+      app_modul_id: modulCV?.id ?? 0,
+      code: "CV_LICENSE_AND_CERTIFICATE",
+      name: "License & Certificate",
+      route: "/cv/license_and_certificate",
+      order: 5,
+    },
+  ];
+
+  const settingMenu = [
     {
       app_modul_id: modulSetting?.id ?? 0,
       code: "SETTING_USER_GROUP",
@@ -80,12 +123,14 @@ const MenuSeeder = async () => {
       app_modul_id: modulSetting?.id ?? 0,
       code: "SETTING_PARENT_MENU",
       name: "Parent Menu",
-      route: "/setting/parent",
+      route: "?/setting/parent",
       order: 10,
     },
   ];
-  
-  await prisma.appMenu.createMany({ data: data });
+
+  await prisma.appMenu.createMany({
+    data: [...settingMenu, ...curriculumVitaeMenu],
+  });
 
   const parentMenu = await prisma.appMenu.findFirst({
     where: { code: "SETTING_PARENT_MENU" },
@@ -106,7 +151,7 @@ const MenuSeeder = async () => {
         app_menu_id_parent: parentMenu?.id ?? 0,
         code: "SETTING_CHILDREN_2",
         name: "Children Menu 2",
-        route: "/setting/parent/children_1",
+        route: "/setting/parent/children_2",
         order: 12,
       },
     ],
