@@ -9,63 +9,6 @@ const MenuSeeder = async () => {
       code: "SETTING",
     },
   });
-  const modulCV = await prisma.appModul.findFirst({
-    where: {
-      code: "CV",
-    },
-  });
-
-  const curriculumVitaeMenu = [
-    {
-      app_modul_id: modulCV?.id ?? 0,
-      code: "CV_PROFILE",
-      name: "Profile",
-      route: "/cv/profile",
-      order: 1,
-    },
-    {
-      app_modul_id: modulCV?.id ?? 0,
-      code: "CV_EXPERIENCE",
-      name: "Experience",
-      route: "/cv/experience",
-      order: 2,
-    },
-    {
-      app_modul_id: modulCV?.id ?? 0,
-      code: "CV_EDUCATION",
-      name: "Education",
-      route: "/cv/education",
-      order: 3,
-    },
-    {
-      app_modul_id: modulCV?.id ?? 0,
-      code: "CV_SKILL",
-      name: "Skill",
-      route: "/cv/skill",
-      order: 4,
-    },
-    {
-      app_modul_id: modulCV?.id ?? 0,
-      code: "CV_LICENSE_AND_CERTIFICATE",
-      name: "License & Certificate",
-      route: "/cv/license_and_certificate",
-      order: 5,
-    },
-    {
-      app_modul_id: modulCV?.id ?? 0,
-      code: "CV_PORTFOLIO",
-      name: "Portfolio",
-      route: "/cv/portfolio",
-      order: 6,
-    },
-    {
-      app_modul_id: modulCV?.id ?? 0,
-      code: "CV_PREVIEW",
-      name: "Preview",
-      route: "/cv/preview",
-      order: 7,
-    },
-  ];
 
   const settingMenu = [
     {
@@ -143,7 +86,7 @@ const MenuSeeder = async () => {
   ];
 
   await prisma.appMenu.createMany({
-    data: [...settingMenu, ...curriculumVitaeMenu],
+    data: [...settingMenu],
   });
 
   const parentMenu = await prisma.appMenu.findFirst({
