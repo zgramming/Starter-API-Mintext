@@ -8,6 +8,7 @@ const AccessMenuSeeder = async () => {
   const superadmin = await prisma.appGroupUser.findFirst({
     where: { code: "superadmin" },
   });
+  const user = await prisma.appGroupUser.findFirst({ where: { code: "user" } });
 
   const menu = await prisma.appMenu.findMany({
     include: { app_modul: true },
@@ -22,8 +23,19 @@ const AccessMenuSeeder = async () => {
     };
   });
 
+  const dataUser = menu
+    .filter((val) => val.app_modul.code == "CV")
+    .map((val, index) => {
+      return {
+        app_group_user_id: user?.id ?? 0,
+        app_modul_id: val.app_modul_id,
+        app_menu_id: val.id,
+        allowed_access: AVAILABLE_ACCESS_MENU,
+      };
+    });
+
   await prisma.appAccessMenu.createMany({
-    data: [...dataSuperadmin],
+    data: [...dataSuperadmin, ...dataUser],
   });
 };
 

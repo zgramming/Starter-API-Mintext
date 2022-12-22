@@ -7,6 +7,7 @@ const AccessModulSeeder = async () => {
   const superadmin = await prisma.appGroupUser.findFirst({
     where: { code: "superadmin" },
   });
+  const user = await prisma.appGroupUser.findFirst({ where: { code: "user" } });
 
   const modul = await prisma.appModul.findMany();
 
@@ -17,8 +18,17 @@ const AccessModulSeeder = async () => {
     };
   });
 
+  const dataUser = modul
+    .filter((val) => val.code == "CV")
+    .map((val, index) => {
+      return {
+        app_group_user_id: user?.id ?? 0,
+        app_modul_id: val.id,
+      };
+    });
+
   await prisma.appAccessModul.createMany({
-    data: [...dataSuperadmin],
+    data: [...dataSuperadmin, ...dataUser],
   });
 };
 

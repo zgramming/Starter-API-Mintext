@@ -1,9 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["interactiveTransactions"]
+  provider = "prisma-client-js"
+  // output          = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -11,11 +8,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TypeCVPreview {
+  pdf
+  website
+}
+
+enum UserStatus {
+  active
+  inactive
+  blocked
+  process_verification
+}
+
+enum CommonStatus {
+  active
+  inactive
+}
+
 model AppGroupUser {
-  id     Int    @id @default(autoincrement())
-  code   String @unique @db.VarChar(50)
-  name   String @db.VarChar(100)
-  status String @default("active")
+  id     Int          @id @default(autoincrement())
+  code   String       @unique @db.VarChar(50)
+  name   String       @db.VarChar(100)
+  status CommonStatus @default(active)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -49,15 +63,15 @@ model AppAccessMenu {
 }
 
 model AppMenu {
-  id                 Int     @id @default(autoincrement())
+  id                 Int          @id @default(autoincrement())
   app_modul_id       Int
   app_menu_id_parent Int?
-  code               String  @db.VarChar(50)
-  name               String  @db.VarChar(100)
-  route              String  @db.VarChar(100)
-  order              Int     @default(0)
+  code               String       @db.VarChar(50)
+  name               String       @db.VarChar(100)
+  route              String       @db.VarChar(100)
+  order              Int          @default(0)
   icon               String?
-  status             String  @default("active")
+  status             CommonStatus @default(active)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -89,13 +103,13 @@ model AppAccessModul {
 }
 
 model AppModul {
-  id      Int     @id @default(autoincrement())
-  code    String  @unique @db.VarChar(50)
-  name    String  @db.VarChar(100)
-  order   Int     @default(0) @db.Int
-  pattern String  @unique @db.VarChar(255)
-  icon    String? @db.VarChar(100)
-  status  String  @default("active")
+  id      Int          @id @default(autoincrement())
+  code    String       @unique @db.VarChar(50)
+  name    String       @db.VarChar(100)
+  order   Int          @default(0) @db.Int
+  pattern String       @unique @db.VarChar(255)
+  icon    String?      @db.VarChar(100)
+  status  CommonStatus @default(active)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -110,19 +124,19 @@ model AppModul {
 }
 
 model Documentation {
-  id          Int      @id @default(autoincrement())
-  name        String   @db.VarChar(100)
-  code        String   @unique @db.VarChar(50)
+  id          Int          @id @default(autoincrement())
+  name        String       @db.VarChar(100)
+  code        String       @unique @db.VarChar(50)
   job_id      Int
   birth_date  DateTime
-  money       Decimal  @db.Decimal(19, 4)
+  money       Decimal      @db.Decimal(19, 4)
   hobbies     Json
-  description String?  @db.Text()
-  status      String   @default("active")
-  image       String?  @db.Text
-  file        String?  @db.Text
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  description String?      @db.Text()
+  status      CommonStatus @default(active)
+  image       String?      @db.Text
+  file        String?      @db.Text
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
   created_by  Int?
   updated_by  Int?
 
@@ -132,12 +146,12 @@ model Documentation {
 }
 
 model MasterCategory {
-  id                 Int     @id @default(autoincrement())
+  id                 Int          @id @default(autoincrement())
   master_category_id Int?
-  code               String  @unique @db.VarChar(50)
-  name               String  @db.VarChar(100)
-  description        String? @db.Text
-  status             String  @default("active")
+  code               String       @unique @db.VarChar(50)
+  name               String       @db.VarChar(100)
+  description        String?      @db.Text
+  status             CommonStatus @default(active)
 
   /// Template
   created_at DateTime @default(now())
@@ -154,20 +168,21 @@ model MasterCategory {
 }
 
 model MasterData {
-  id                   Int     @id @default(autoincrement())
+  id                   Int          @id @default(autoincrement())
   master_data_id       Int?
   master_category_id   Int
-  master_category_code String  @db.VarChar(50)
-  code                 String  @unique @db.VarChar(50)
-  name                 String  @db.VarChar(100)
-  description          String? @db.Text
-  status               String  @default("active")
-  parameter1_key       String? @db.VarChar(50)
-  parameter1_value     String? @db.VarChar(50)
-  parameter2_key       String? @db.VarChar(50)
-  parameter2_value     String? @db.VarChar(50)
-  parameter3_key       String? @db.VarChar(50)
-  parameter3_value     String? @db.VarChar(50)
+  master_category_code String       @db.VarChar(50)
+  code                 String       @unique @db.VarChar(50)
+  name                 String       @db.VarChar(100)
+  order                Int          @default(0)
+  description          String?      @db.Text
+  status               CommonStatus @default(active)
+  parameter1_key       String?      @db.VarChar(50)
+  parameter1_value     String?      @db.VarChar(50)
+  parameter2_key       String?      @db.VarChar(50)
+  parameter2_value     String?      @db.VarChar(50)
+  parameter3_key       String?      @db.VarChar(50)
+  parameter3_value     String?      @db.VarChar(50)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -177,17 +192,17 @@ model MasterData {
   master_category      MasterCategory  @relation(fields: [master_category_id], references: [id], onDelete: Cascade)
   master_data_parent   MasterData?     @relation(name: "master_data", fields: [master_data_id], references: [id], onDelete: Cascade)
   master_data_children MasterData[]    @relation(name: "master_data")
-  jobsDocumentation    Documentation[]
+  jobs_documentation   Documentation[]
 
   @@map("master_data")
 }
 
 model Parameter {
-  id     Int    @id @default(autoincrement())
-  name   String @db.VarChar(100)
-  code   String @unique @db.VarChar(50)
-  value  String @db.Text
-  status String @default("active")
+  id     Int          @id @default(autoincrement())
+  name   String       @db.VarChar(100)
+  code   String       @unique @db.VarChar(50)
+  value  String       @db.Text
+  status CommonStatus @default(active)
 
   /// Template
   created_at DateTime @default(now())
@@ -199,13 +214,13 @@ model Parameter {
 }
 
 model Users {
-  id                Int    @id @default(autoincrement())
+  id                Int        @id @default(autoincrement())
   app_group_user_id Int
-  name              String @db.VarChar(100)
-  email             String @unique @db.VarChar(100)
-  username          String @unique @db.VarChar(50)
-  password          String @db.Text
-  status            String @default("active")
+  name              String?    @db.VarChar(100)
+  email             String     @unique @db.VarChar(100)
+  username          String     @unique @db.VarChar(50)
+  password          String     @db.Text
+  status            UserStatus @default(inactive)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
